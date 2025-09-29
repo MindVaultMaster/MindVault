@@ -1,0 +1,21 @@
+{
+    "name": "MindVault Complete",
+    "short_name": "MindVault",
+    "description": "Complete MindVault with all Filament features",
+    "start_url": ".\/",
+    "display": "standalone",
+    "background_color": "#18181b",
+    "theme_color": "#18181b",
+    "icons": [
+        {
+            "src": ".\/favicon.ico",
+            "sizes": "48x48",
+            "type": "image\/x-icon"
+        },
+        {
+            "src": ".\/apple-touch-icon.png",
+            "sizes": "180x180",
+            "type": "image\/png"
+        }
+    ]
+}

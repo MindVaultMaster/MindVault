@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('substances', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->string('category')->nullable(); // e.g., 'nootropic', 'medication', 'supplement'
+            $table->string('common_dosage')->nullable();
+            $table->text('notes')->nullable();
+            $table->boolean('is_predefined')->default(false); // admin-created vs user-created
+            $table->foreignId('created_by_user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->boolean('is_public')->default(false); // can other users see/use this substance
+            $table->timestamps();
+
+            $table->index(['name', 'is_public']);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('substances');
+    }
+};

@@ -1,0 +1,237 @@
+/* MindVault - Neuroscience Inspired Theme */
+
+/* Custom CSS Variables for Brain/Neuroscience Theme */
+:root {
+    --brain-primary: #2563eb;
+    --brain-secondary: #0ea5e9;
+    --neural-purple: #8b5cf6;
+    --synapse-teal: #14b8a6;
+    --cognitive-green: #10b981;
+    --memory-indigo: #6366f1;
+    --focus-amber: #f59e0b;
+
+    /* Gradients */
+    --neural-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --synapse-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --cognitive-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --brain-wave-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+/* Enhanced Brand Styling */
+.fi-sidebar-header {
+    background: var(--neural-gradient) !important;
+    border-radius: 0 0 1rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.fi-logo {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+/* Navigation Enhancement */
+.fi-sidebar-nav {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 1rem;
+    margin: 0.5rem;
+    padding: 1rem 0;
+}
+
+.fi-sidebar-group-label {
+    background: var(--cognitive-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+/* Card Enhancements */
+.fi-section {
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.fi-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Widget Styling */
+.fi-wi-stats-overview-stat {
+    background: var(--brain-wave-gradient) !important;
+    color: white !important;
+    border-radius: 1rem;
+    border: none !important;
+}
+
+.fi-wi-stats-overview-stat-label {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.fi-wi-stats-overview-stat-value {
+    color: white !important;
+    font-weight: 700;
+}
+
+/* Button Enhancements */
+.fi-btn-primary {
+    background: var(--neural-gradient) !important;
+    border: none !important;
+    border-radius: 0.75rem !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+}
+
+.fi-btn-primary:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3) !important;
+}
+
+/* Form Field Enhancements */
+.fi-input {
+    border-radius: 0.75rem !important;
+    border: 2px solid #e2e8f0 !important;
+    transition: all 0.3s ease !important;
+}
+
+.fi-input:focus {
+    border-color: var(--brain-primary) !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+/* Table Enhancements */
+.fi-ta-table {
+    border-radius: 1rem !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+.fi-ta-header-cell {
+    background: var(--cognitive-gradient) !important;
+    color: white !important;
+    font-weight: 600 !important;
+}
+
+.fi-ta-row:nth-child(even) {
+    background: rgba(248, 250, 252, 0.5) !important;
+}
+
+/* Badge Styling for Substance Categories */
+.fi-badge {
+    border-radius: 0.5rem !important;
+    font-weight: 600 !important;
+    padding: 0.25rem 0.75rem !important;
+}
+
+/* Nootropic Category Colors */
+.fi-badge[style*="info"] {
+    background: var(--neural-gradient) !important;
+    color: white !important;
+}
+
+.fi-badge[style*="success"] {
+    background: var(--brain-wave-gradient) !important;
+    color: white !important;
+}
+
+.fi-badge[style*="warning"] {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+    color: white !important;
+}
+
+/* Modal Enhancements */
+.fi-modal {
+    border-radius: 1.5rem !important;
+    overflow: hidden !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+.fi-modal-header {
+    background: var(--neural-gradient) !important;
+    color: white !important;
+}
+
+/* Quality Score Badges */
+.quality-excellent {
+    background: var(--brain-wave-gradient) !important;
+    color: white !important;
+}
+
+.quality-good {
+    background: var(--cognitive-gradient) !important;
+    color: white !important;
+}
+
+.quality-average {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+    color: white !important;
+}
+
+/* Dashboard Widget Backgrounds */
+.fi-wi-chart {
+    border-radius: 1rem !important;
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+/* Loading Animations */
+@keyframes brainWave {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.brain-pulse {
+    animation: brainWave 2s ease-in-out infinite;
+}
+
+/* Neuroscience Icons Enhancement */
+.fi-sidebar-item-icon {
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+}
+
+/* Focus States */
+.fi-input:focus-within,
+.fi-select:focus-within,
+.fi-textarea:focus-within {
+    border-color: var(--brain-primary) !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+/* Research Library Cards */
+.research-card {
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 1rem;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.research-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Typography */
+@media (min-width: 768px) {
+    .fi-header-heading {
+        background: var(--neural-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
+    }
+}
+
+/* Dark Mode Considerations */
+@media (prefers-color-scheme: dark) {
+    .fi-section {
+        background: linear-gradient(145deg, #1e293b 0%, #334155 100%);
+        border-color: #475569;
+    }
+
+    .fi-sidebar-nav {
+        background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+    }
+}

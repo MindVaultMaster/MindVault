@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MindVault</title>
+
+    <link rel="icon" href="./favicon.ico">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+
+    <link href="./build/assets/app-DynmULMn.css" rel="stylesheet">
+    <link href="./css/mindvault-theme.css" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background: rgb(24 24 27);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Mobile Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 16rem;
+            background: rgb(24 24 27);
+            border-right: 1px solid rgb(63 63 70);
+            z-index: 50;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 60;
+            background: rgb(39 39 42);
+            color: white;
+            border: 1px solid rgb(63 63 70);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            margin-top: 4rem;
+            height: calc(100vh - 4rem);
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar {
+                transform: translateX(0);
+                position: static;
+            }
+            .main-content {
+                margin-top: 0;
+                height: 100vh;
+            }
+            .sidebar-toggle {
+                display: none;
+            }
+        }
+
+        /* Navigation */
+        .nav-brand {
+            padding: 1.5rem 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            border-bottom: 1px solid rgb(63 63 70);
+            text-align: center;
+        }
+
+        .nav-section {
+            padding: 1rem 0;
+        }
+
+        .nav-section-title {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: rgb(161 161 170);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: rgb(161 161 170);
+            text-decoration: none;
+            border-radius: 0.375rem;
+            margin: 0.25rem 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: rgb(39 39 42);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: rgb(59 130 246);
+            color: white;
+        }
+
+        .nav-item svg {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        /* Content sections */
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Page frame for Laravel pages */
+        .page-frame {
+            width: 100%;
+            height: calc(100vh - 8rem);
+            border: none;
+            border-radius: 0.75rem;
+            background: white;
+        }
+
+        /* Cards and components */
+        .card {
+            background: rgb(39 39 42);
+            border: 1px solid rgb(63 63 70);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background: rgb(59 130 246);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: rgb(37 99 235);
+        }
+
+        .btn-secondary {
+            background: rgb(107 114 128);
+        }
+
+        .btn-secondary:hover {
+            background: rgb(75 85 99);
+        }
+
+        /* Loading and states */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 60vh;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 2px solid rgb(63 63 70);
+            border-top: 2px solid rgb(59 130 246);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Authentication styles */
+        .auth-form {
+            max-width: 400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgb(39 39 42);
+            border-radius: 0.75rem;
+            border: 1px solid rgb(63 63 70);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: rgb(229 231 235);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgb(55 65 81);
+            border: 1px solid rgb(75 85 99);
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: rgb(59 130 246);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile Menu Toggle -->
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+            <svg fill="currentColor" viewBox="0 0 20 20" width="20" height="20">
+                <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+            </svg>
+        </button>
+
+        <!-- Sidebar Navigation -->
+        <div class="sidebar" id="sidebar">
+            <div class="nav-brand">
+                MindVault
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <div class="nav-item active" onclick="showSection('dashboard')">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                    </svg>
+                    Dashboard
+                </div>
+
+                <div class="nav-item" onclick="showSection('notes')">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 2a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                    </svg>
+                    Notes
+                </div>
+
+                <div class="nav-item" onclick="showSection('tasks')">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                    </svg>
+                    Tasks
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Laravel Pages</div>
+                <div class="nav-item" onclick="loadLaravelPage('dashboard')">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    Full Dashboard
+                </div>
+
+                <div class="nav-item" onclick="showSection('settings')">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
+                    </svg>
+                    Settings
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Account</div>
+                <div class="nav-item" onclick="showSection('profile')">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                    </svg>
+                    Profile
+                </div>
+
+                <div class="nav-item" onclick="showSection('auth')">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Login / Register
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section active">
+                <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 2rem;">Welcome to MindVault</h1>
+
+                <div style="display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin-bottom: 2rem;">
+                    <div class="card">
+                        <h3>Quick Stats</h3>
+                        <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; font-weight: bold; color: rgb(59 130 246);" id="notes-count">0</div>
+                                <div style="color: rgb(156 163 175);">Notes</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; font-weight: bold; color: rgb(34 197 94);" id="tasks-count">0</div>
+                                <div style="color: rgb(156 163 175);">Tasks</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Quick Actions</h3>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
+                            <button class="btn" onclick="showSection('notes')">Add Note</button>
+                            <button class="btn btn-secondary" onclick="showSection('tasks')">Add Task</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Laravel Integration</h3>
+                    <p style="color: rgb(156 163 175); margin-bottom: 1rem;">Access your full Laravel application features:</p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="btn" onclick="loadLaravelPage('dashboard')">Full Dashboard</button>
+                        <button class="btn btn-secondary" onclick="loadLaravelPage('profile')">Profile Settings</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Laravel Page Frame Section -->
+            <div id="laravel-section" class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2 id="laravel-page-title" style="font-size: 1.5rem; font-weight: bold;">Laravel Page</h2>
+                    <button class="btn btn-secondary" onclick="showSection('dashboard')">← Back to Dashboard</button>
+                </div>
+                <iframe id="laravel-frame" class="page-frame" src=""></iframe>
+            </div>
+
+            <!-- Notes Section -->
+            <div id="notes-section" class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h1 style="font-size: 2rem; font-weight: bold;">Notes</h1>
+                    <button class="btn" onclick="addNote()">Add Note</button>
+                </div>
+                <div id="notes-list"></div>
+            </div>
+
+            <!-- Tasks Section -->
+            <div id="tasks-section" class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h1 style="font-size: 2rem; font-weight: bold;">Tasks</h1>
+                    <button class="btn" onclick="addTask()">Add Task</button>
+                </div>
+                <div id="tasks-list"></div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings-section" class="section">
+                <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 2rem;">Settings</h1>
+
+                <div class="card">
+                    <h3>App Information</h3>
+                    <p style="color: rgb(156 163 175); margin-bottom: 0.5rem;">MindVault Mobile v1.0</p>
+                    <p style="color: rgb(156 163 175); font-size: 0.875rem;">Complete Laravel application in a mobile wrapper</p>
+                </div>
+
+                <div class="card">
+                    <h3>Data Management</h3>
+                    <p style="color: rgb(156 163 175); margin-bottom: 1rem;">Manage your local app data</p>
+                    <button class="btn btn-secondary" onclick="clearData()" style="background: rgb(220 38 38);">Clear All Data</button>
+                </div>
+
+                <div class="card">
+                    <h3>Laravel Features</h3>
+                    <p style="color: rgb(156 163 175); margin-bottom: 1rem;">Access full Laravel functionality</p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="btn" onclick="loadLaravelPage('profile')">Profile Settings</button>
+                        <button class="btn btn-secondary" onclick="loadLaravelPage('password')">Change Password</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile-section" class="section">
+                <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 2rem;">Profile</h1>
+                <div class="card">
+                    <h3>User Information</h3>
+                    <p style="color: rgb(156 163 175);">Manage your profile settings in the full Laravel interface</p>
+                    <button class="btn" onclick="loadLaravelPage('profile')" style="margin-top: 1rem;">Open Profile Settings</button>
+                </div>
+            </div>
+
+            <!-- Auth Section -->
+            <div id="auth-section" class="section">
+                <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 2rem; text-align: center;">Authentication</h1>
+
+                <div class="auth-form">
+                    <h3 style="text-align: center; margin-bottom: 2rem;">Demo Login</h3>
+
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" value="demo@mindvault.com" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" value="password" readonly>
+                    </div>
+
+                    <button class="btn" style="width: 100%; justify-content: center;" onclick="demoLogin()">
+                        Login (Demo)
+                    </button>
+
+                    <p style="text-align: center; margin-top: 1rem; color: rgb(156 163 175); font-size: 0.875rem;">
+                        This is a demo login for the mobile app
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile App State Management
+        class MindVaultApp {
+            constructor() {
+                this.currentUser = null;
+                this.init();
+            }
+
+            init() {
+                this.loadData();
+                this.updateDashboard();
+
+                // Auto-login demo user
+                this.currentUser = {
+                    name: 'Demo User',
+                    email: 'demo@mindvault.com'
+                };
+            }
+
+            // Data Management
+            saveData(key, data) {
+                localStorage.setItem('mindvault_' + key, JSON.stringify(data));
+                this.updateDashboard();
+            }
+
+            loadData(key) {
+                const data = localStorage.getItem('mindvault_' + key);
+                return data ? JSON.parse(data) : [];
+            }
+
+            updateDashboard() {
+                const notes = this.loadData('notes');
+                const tasks = this.loadData('tasks');
+                const completedTasks = tasks.filter(task => task.completed).length;
+
+                const notesCount = document.getElementById('notes-count');
+                const tasksCount = document.getElementById('tasks-count');
+
+                if (notesCount) notesCount.textContent = notes.length;
+                if (tasksCount) tasksCount.textContent = completedTasks;
+            }
+        }
+
+        // Initialize app
+        const app = new MindVaultApp();
+
+        // Navigation Functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active class from nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+
+            // Show selected section
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+
+            // Add active class to nav item
+            event.target.closest('.nav-item').classList.add('active');
+
+            // Close sidebar on mobile
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.remove('open');
+
+            // Load section data
+            if (sectionName === 'notes') loadNotes();
+            if (sectionName === 'tasks') loadTasks();
+        }
+
+        // Laravel Page Integration
+        function loadLaravelPage(page) {
+            const pageMap = {
+                'dashboard': './pages/dashboard.html',
+                'profile': './pages/settings/profile.html',
+                'password': './pages/settings/password.html',
+                'appearance': './pages/settings/appearance.html'
+            };
+
+            const url = pageMap[page];
+            if (url) {
+                // Show Laravel section
+                showLaravelSection();
+
+                // Load the page
+                const frame = document.getElementById('laravel-frame');
+                const title = document.getElementById('laravel-page-title');
+
+                frame.src = url;
+                title.textContent = page.charAt(0).toUpperCase() + page.slice(1);
+
+                // Close sidebar
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.remove('open');
+            }
+        }
+
+        function showLaravelSection() {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+
+            // Show Laravel section
+            document.getElementById('laravel-section').classList.add('active');
+
+            // Remove active from nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+        }
+
+        // Notes Functions
+        function addNote() {
+            const title = prompt('Note title:');
+            const content = prompt('Note content:');
+
+            if (title && content) {
+                const notes = app.loadData('notes');
+                const note = {
+                    id: Date.now(),
+                    title: title,
+                    content: content,
+                    created: new Date().toLocaleDateString()
+                };
+                notes.push(note);
+                app.saveData('notes', notes);
+                loadNotes();
+            }
+        }
+
+        function loadNotes() {
+            const notes = app.loadData('notes');
+            const notesList = document.getElementById('notes-list');
+
+            if (notes.length === 0) {
+                notesList.innerHTML = '<div class="card"><p style="color: rgb(156 163 175);">No notes yet. Create your first note!</p></div>';
+                return;
+            }
+
+            notesList.innerHTML = notes.map(note => `
+                <div class="card">
+                    <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 1rem;">
+                        <h3 style="flex: 1;">${note.title}</h3>
+                        <button onclick="deleteNote(${note.id})" style="background: rgb(220 38 38); color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;">
+                            Delete
+                        </button>
+                    </div>
+                    <p style="color: rgb(229 231 235); margin-bottom: 1rem;">${note.content}</p>
+                    <p style="color: rgb(156 163 175); font-size: 0.875rem;">Created: ${note.created}</p>
+                </div>
+            `).join('');
+        }
+
+        function deleteNote(id) {
+            if (confirm('Delete this note?')) {
+                const notes = app.loadData('notes');
+                const filtered = notes.filter(note => note.id !== id);
+                app.saveData('notes', filtered);
+                loadNotes();
+            }
+        }
+
+        // Tasks Functions
+        function addTask() {
+            const title = prompt('Task title:');
+
+            if (title) {
+                const tasks = app.loadData('tasks');
+                const task = {
+                    id: Date.now(),
+                    title: title,
+                    completed: false,
+                    created: new Date().toLocaleDateString()
+                };
+                tasks.push(task);
+                app.saveData('tasks', tasks);
+                loadTasks();
+            }
+        }
+
+        function loadTasks() {
+            const tasks = app.loadData('tasks');
+            const tasksList = document.getElementById('tasks-list');
+
+            if (tasks.length === 0) {
+                tasksList.innerHTML = '<div class="card"><p style="color: rgb(156 163 175);">No tasks yet. Create your first task!</p></div>';
+                return;
+            }
+
+            tasksList.innerHTML = tasks.map(task => `
+                <div class="card">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; flex: 1;">
+                            <input type="checkbox" ${task.completed ? 'checked' : ''}
+                                   onchange="toggleTask(${task.id})"
+                                   style="margin-right: 1rem; width: 1.25rem; height: 1.25rem;">
+                            <div>
+                                <h3 style="margin: 0; ${task.completed ? 'text-decoration: line-through; color: rgb(156 163 175);' : ''}">${task.title}</h3>
+                                <p style="margin: 0; color: rgb(156 163 175); font-size: 0.875rem;">Created: ${task.created}</p>
+                            </div>
+                        </div>
+                        <button onclick="deleteTask(${task.id})" style="background: rgb(220 38 38); color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleTask(id) {
+            const tasks = app.loadData('tasks');
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                app.saveData('tasks', tasks);
+                loadTasks();
+            }
+        }
+
+        function deleteTask(id) {
+            if (confirm('Delete this task?')) {
+                const tasks = app.loadData('tasks');
+                const filtered = tasks.filter(task => task.id !== id);
+                app.saveData('tasks', filtered);
+                loadTasks();
+            }
+        }
+
+        // Settings Functions
+        function clearData() {
+            if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                localStorage.clear();
+                app.init();
+                loadNotes();
+                loadTasks();
+                alert('All data cleared!');
+            }
+        }
+
+        // Auth Functions
+        function demoLogin() {
+            alert('Demo login successful! You now have access to all features.');
+            showSection('dashboard');
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Close sidebar when clicking outside
+            document.addEventListener('click', function(event) {
+                const sidebar = document.getElementById('sidebar');
+                const sidebarToggle = document.querySelector('.sidebar-toggle');
+
+                if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
+                    sidebar.classList.remove('open');
+                }
+            });
+
+            // Load initial data
+            app.updateDashboard();
+        });
+    </script>
+</body>
+</html>

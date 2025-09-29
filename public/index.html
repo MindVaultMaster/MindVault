@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>MindVault</title>
+
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+
+    <link href="/build/assets/app-DynmULMn.css" rel="stylesheet">
+    <link href="/css/mindvault-theme.css" rel="stylesheet">
+
+    <style>
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 16rem;
+            background: rgb(24 24 27);
+            border-right: 1px solid rgb(63 63 70);
+            z-index: 50;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 60;
+            background: rgb(24 24 27);
+            color: white;
+            border: 1px solid rgb(63 63 70);
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+        }
+
+        .main-content {
+            margin-left: 0;
+            padding: 1rem;
+            min-height: 100vh;
+            background: rgb(24 24 27);
+            color: white;
+            transition: margin-left 0.3s ease;
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar {
+                transform: translateX(0);
+                position: static;
+            }
+            .main-content {
+                margin-left: 16rem;
+            }
+            .sidebar-toggle {
+                display: none;
+            }
+        }
+
+        .dashboard-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-card {
+            aspect-ratio: 16/9;
+            background: rgb(39 39 42);
+            border: 1px solid rgb(63 63 70);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-main {
+            background: rgb(39 39 42);
+            border: 1px solid rgb(63 63 70);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            height: 20rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: rgb(161 161 170);
+            text-decoration: none;
+            border-radius: 0.375rem;
+            margin: 0.25rem 0;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover {
+            background: rgb(39 39 42);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: rgb(59 130 246);
+            color: white;
+        }
+
+        .logo {
+            padding: 1rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: white;
+            border-bottom: 1px solid rgb(63 63 70);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-zinc-800 text-white">
+    <button class="sidebar-toggle" onclick="toggleSidebar()">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+        </svg>
+    </button>
+
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            MindVault
+        </div>
+
+        <nav class="p-4">
+            <a href="#dashboard" class="nav-item active" onclick="showSection('dashboard')">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20" style="display: inline; margin-right: 8px;">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                </svg>
+                Dashboard
+            </a>
+
+            <a href="#notes" class="nav-item" onclick="showSection('notes')">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20" style="display: inline; margin-right: 8px;">
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 2a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                </svg>
+                Notes
+            </a>
+
+            <a href="#tasks" class="nav-item" onclick="showSection('tasks')">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20" style="display: inline; margin-right: 8px;">
+                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                </svg>
+                Tasks
+            </a>
+
+            <a href="#settings" class="nav-item" onclick="showSection('settings')">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20" style="display: inline; margin-right: 8px;">
+                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
+                </svg>
+                Settings
+            </a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="section">
+            <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <div class="text-center">
+                        <h3 class="text-lg font-semibold mb-2">Total Notes</h3>
+                        <p class="text-3xl font-bold text-blue-400" id="notes-count">0</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="text-center">
+                        <h3 class="text-lg font-semibold mb-2">Completed Tasks</h3>
+                        <p class="text-3xl font-bold text-green-400" id="tasks-count">0</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="text-center">
+                        <h3 class="text-lg font-semibold mb-2">Recent Activity</h3>
+                        <p class="text-sm text-gray-400">Last updated today</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-main">
+                <div class="text-center text-gray-400">
+                    <h2 class="text-xl font-semibold mb-2">Welcome to MindVault</h2>
+                    <p>Your personal knowledge management system</p>
+                    <p class="mt-4 text-sm">This is the offline version of your app</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notes Section -->
+        <div id="notes-section" class="section" style="display: none;">
+            <h1 class="text-2xl font-bold mb-6">Notes</h1>
+
+            <div class="mb-4">
+                <button onclick="addNote()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">
+                    Add New Note
+                </button>
+            </div>
+
+            <div id="notes-list" class="space-y-4">
+                <!-- Notes will be added here -->
+            </div>
+        </div>
+
+        <!-- Tasks Section -->
+        <div id="tasks-section" class="section" style="display: none;">
+            <h1 class="text-2xl font-bold mb-6">Tasks</h1>
+
+            <div class="mb-4">
+                <button onclick="addTask()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg">
+                    Add New Task
+                </button>
+            </div>
+
+            <div id="tasks-list" class="space-y-4">
+                <!-- Tasks will be added here -->
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div id="settings-section" class="section" style="display: none;">
+            <h1 class="text-2xl font-bold mb-6">Settings</h1>
+
+            <div class="space-y-6">
+                <div class="dashboard-card">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2">App Information</h3>
+                        <p class="text-gray-400">MindVault v1.0 - Offline Mode</p>
+                        <p class="text-sm text-gray-500 mt-2">Data is stored locally on your device</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2">Storage</h3>
+                        <button onclick="clearData()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm">
+                            Clear All Data
+                        </button>
+                        <p class="text-sm text-gray-500 mt-2">This will remove all notes and tasks</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/build/assets/app-l0sNRNKZ.js"></script>
+
+    <script>
+        // Local storage management
+        function saveData(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+            updateCounts();
+        }
+
+        function loadData(key) {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : [];
+        }
+
+        function updateCounts() {
+            const notes = loadData('notes');
+            const tasks = loadData('tasks');
+            const completedTasks = tasks.filter(task => task.completed).length;
+
+            document.getElementById('notes-count').textContent = notes.length;
+            document.getElementById('tasks-count').textContent = completedTasks;
+        }
+
+        // Navigation
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.style.display = 'none');
+
+            // Remove active class from all nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+
+            // Show selected section
+            document.getElementById(sectionName + '-section').style.display = 'block';
+
+            // Add active class to clicked nav item
+            event.target.classList.add('active');
+
+            // Close sidebar on mobile
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.remove('open');
+
+            // Load section data
+            if (sectionName === 'notes') loadNotes();
+            if (sectionName === 'tasks') loadTasks();
+        }
+
+        // Notes functionality
+        function addNote() {
+            const title = prompt('Note title:');
+            const content = prompt('Note content:');
+
+            if (title && content) {
+                const notes = loadData('notes');
+                const note = {
+                    id: Date.now(),
+                    title: title,
+                    content: content,
+                    created: new Date().toLocaleDateString()
+                };
+                notes.push(note);
+                saveData('notes', notes);
+                loadNotes();
+            }
+        }
+
+        function loadNotes() {
+            const notes = loadData('notes');
+            const notesList = document.getElementById('notes-list');
+
+            if (notes.length === 0) {
+                notesList.innerHTML = '<p class="text-gray-400">No notes yet. Add your first note!</p>';
+                return;
+            }
+
+            notesList.innerHTML = notes.map(note => `
+                <div class="dashboard-card">
+                    <div class="w-full">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-lg font-semibold">${note.title}</h3>
+                            <button onclick="deleteNote(${note.id})" class="text-red-400 hover:text-red-300">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-gray-300 mb-2">${note.content}</p>
+                        <p class="text-sm text-gray-500">Created: ${note.created}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteNote(id) {
+            if (confirm('Delete this note?')) {
+                const notes = loadData('notes');
+                const filtered = notes.filter(note => note.id !== id);
+                saveData('notes', filtered);
+                loadNotes();
+            }
+        }
+
+        // Tasks functionality
+        function addTask() {
+            const title = prompt('Task title:');
+
+            if (title) {
+                const tasks = loadData('tasks');
+                const task = {
+                    id: Date.now(),
+                    title: title,
+                    completed: false,
+                    created: new Date().toLocaleDateString()
+                };
+                tasks.push(task);
+                saveData('tasks', tasks);
+                loadTasks();
+            }
+        }
+
+        function loadTasks() {
+            const tasks = loadData('tasks');
+            const tasksList = document.getElementById('tasks-list');
+
+            if (tasks.length === 0) {
+                tasksList.innerHTML = '<p class="text-gray-400">No tasks yet. Add your first task!</p>';
+                return;
+            }
+
+            tasksList.innerHTML = tasks.map(task => `
+                <div class="dashboard-card">
+                    <div class="w-full flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input type="checkbox" ${task.completed ? 'checked' : ''}
+                                   onchange="toggleTask(${task.id})"
+                                   class="mr-3 w-4 h-4">
+                            <div>
+                                <h3 class="text-lg font-semibold ${task.completed ? 'line-through text-gray-500' : ''}">${task.title}</h3>
+                                <p class="text-sm text-gray-500">Created: ${task.created}</p>
+                            </div>
+                        </div>
+                        <button onclick="deleteTask(${task.id})" class="text-red-400 hover:text-red-300">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleTask(id) {
+            const tasks = loadData('tasks');
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                saveData('tasks', tasks);
+                loadTasks();
+            }
+        }
+
+        function deleteTask(id) {
+            if (confirm('Delete this task?')) {
+                const tasks = loadData('tasks');
+                const filtered = tasks.filter(task => task.id !== id);
+                saveData('tasks', filtered);
+                loadTasks();
+            }
+        }
+
+        // Settings
+        function clearData() {
+            if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                localStorage.clear();
+                updateCounts();
+                loadNotes();
+                loadTasks();
+                alert('All data cleared!');
+            }
+        }
+
+        // Initialize app
+        updateCounts();
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.querySelector('.sidebar-toggle');
+
+            if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+    "name": "MindVault",
+    "short_name": "MindVault",
+    "description": "Your personal knowledge management system",
+    "start_url": ".\/app.html",
+    "display": "standalone",
+    "background_color": "#18181b",
+    "theme_color": "#18181b",
+    "icons": [
+        {
+            "src": ".\/favicon.ico",
+            "sizes": "48x48",
+            "type": "image\/x-icon"
+        }
+    ]
+}
