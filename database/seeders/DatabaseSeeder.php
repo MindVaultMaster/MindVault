@@ -16,11 +16,25 @@ class DatabaseSeeder extends Seeder
         // Seed popular nootropics first
         $this->call(PopularNootropicsSeeder::class);
 
-        // User::factory(10)->create();
+        // Create default admin user
+        User::firstOrCreate(
+            ['email' => 'admin@mindvault.com'],
+            [
+                'name' => 'Admin User',
+                'password' => bcrypt('password123'),
+                'is_admin' => true,
+                'email_verified_at' => now(),
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Create default test user
+        User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'password' => bcrypt('password123'),
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }
