@@ -68,6 +68,8 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->authGuard('web')
+            ->canAccess(fn () => auth()->check() && auth()->user()->is_admin)
             ->userMenuItems([
                 MenuItem::make()
                     ->label('Switch to User Dashboard')
