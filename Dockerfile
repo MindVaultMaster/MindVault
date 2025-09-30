@@ -9,16 +9,15 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libzip-dev \
     libicu-dev \
+    libpq-dev \
     zip \
     unzip \
     nodejs \
-    npm \
-    sqlite3 \
-    libsqlite3-dev
+    npm
 
-# Install PHP extensions (including intl and zip)
+# Install PHP extensions (including intl, zip, and pgsql)
 RUN docker-php-ext-configure intl \
-    && docker-php-ext-install pdo pdo_sqlite mbstring exif pcntl bcmath gd intl zip
+    && docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd intl zip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -33,11 +32,8 @@ COPY . .
 RUN composer install --optimize-autoloader --no-dev
 RUN npm ci && npm run build
 
-# Create SQLite database directory
-RUN mkdir -p /app/database && touch /app/database/database.sqlite
-
 # Set permissions
-RUN chmod -R 777 /app/storage /app/bootstrap/cache /app/database
+RUN chmod -R 777 /app/storage /app/bootstrap/cache
 
 # Expose port
 EXPOSE 8080
