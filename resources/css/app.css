@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+/* Commented out problematic Flux CSS import for Render deployment */
 /* @import '../../vendor/livewire/flux/dist/flux.css'; */
 
 @source '../views';
