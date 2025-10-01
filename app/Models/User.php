@@ -65,7 +65,13 @@ class User extends Authenticatable
 
     public function canAccessPanel(\Filament\Panel $panel): bool
     {
-        return $this->is_admin;
+        // Admin users can access the admin panel
+        if ($panel->getId() === 'admin') {
+            return $this->is_admin;
+        }
+
+        // All authenticated users can access the user panel
+        return true;
     }
 
     public function journalEntries(): HasMany

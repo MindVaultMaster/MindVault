@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PopularNootropicsSeeder::class);
 
         // Create default admin user
-        User::firstOrCreate(
+        User::updateOrCreate(
             ['email' => 'admin@mindvault.com'],
             [
                 'name' => 'Admin User',
@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
         );
 
         // Create default test user
-        User::firstOrCreate(
+        User::updateOrCreate(
             ['email' => 'test@example.com'],
             [
                 'name' => 'Test User',
